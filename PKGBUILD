@@ -25,11 +25,11 @@ install=${pkgname}.install
 provides=('chiri')
 
 source_x86_64=(
-  "https://github.com/SapphoSys/chiri/releases/download/app-v${pkgver}/chiri_${pkgver}_amd64.deb"
+  "https://github.com/SapphoSys/chiri/releases/download/app-v${pkgver}/Chiri_${pkgver}_amd64.deb"
   "chiri.desktop"
 )
 source_aarch64=(
-  "https://github.com/SapphoSys/chiri/releases/download/app-v${pkgver}/chiri_${pkgver}_arm64.deb"
+  "https://github.com/SapphoSys/chiri/releases/download/app-v${pkgver}/Chiri_${pkgver}_arm64.deb"
   "chiri.desktop"
 )
 
