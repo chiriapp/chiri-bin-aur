@@ -45,9 +45,9 @@ sha256sums_aarch64=(
 package() {
   # Determine which .deb file to extract
   if [ "$CARCH" = "x86_64" ]; then
-    local debfile="chiri_${pkgver}_amd64.deb"
+    local debfile="Chiri_${pkgver}_amd64.deb"
   else
-    local debfile="chiri_${pkgver}_arm64.deb"
+    local debfile="Chiri_${pkgver}_arm64.deb"
   fi
 
   # Extract the .deb package directly to pkgdir
