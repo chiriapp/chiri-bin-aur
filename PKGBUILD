@@ -25,11 +25,11 @@ install=${pkgname}.install
 provides=('chiri')
 
 source_x86_64=(
-  "https://github.com/SapphoSys/chiri/releases/download/app-v${pkgver}/Chiri_${pkgver}_amd64.deb"
+  "https://github.com/SapphoSys/chiri/releases/download/app-v${pkgver}/chiri_${pkgver}_amd64.deb"
   "chiri.desktop"
 )
 source_aarch64=(
-  "https://github.com/SapphoSys/chiri/releases/download/app-v${pkgver}/Chiri_${pkgver}_arm64.deb"
+  "https://github.com/SapphoSys/chiri/releases/download/app-v${pkgver}/chiri_${pkgver}_arm64.deb"
   "chiri.desktop"
 )
 
@@ -45,9 +45,9 @@ sha256sums_aarch64=(
 package() {
   # Determine which .deb file to extract
   if [ "$CARCH" = "x86_64" ]; then
-    local debfile="Chiri_${pkgver}_amd64.deb"
+    local debfile="chiri_${pkgver}_amd64.deb"
   else
-    local debfile="Chiri_${pkgver}_arm64.deb"
+    local debfile="chiri_${pkgver}_arm64.deb"
   fi
 
   # Extract the .deb package directly to pkgdir
