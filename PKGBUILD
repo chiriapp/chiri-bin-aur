@@ -57,7 +57,7 @@ package() {
   # Fix permissions
   find "${pkgdir}" -type d -exec chmod 755 {} +
   find "${pkgdir}" -type f -exec chmod 644 {} +
-  chmod 755 "${pkgdir}/usr/bin/chiri"
+  chmod 755 "${pkgdir}/usr/bin/Chiri"
 
   # Create AUR installation marker to disable in-app updates
   install -dm755 "${pkgdir}/usr/share/chiri"
