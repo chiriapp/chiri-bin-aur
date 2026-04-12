@@ -1,7 +1,7 @@
 # Maintainer: Sapphic Angels <chloe@sapphic.moe>
 # Binary package PKGBUILD - installs from pre-built releases
 pkgname=chiri-bin
-pkgver=0.8.0
+pkgver=0.8.1
 pkgrel=2
 pkgdesc="A cross-platform CalDAV task management app. Currently in very early alpha! (binary release)"
 arch=('x86_64' 'aarch64')
