@@ -1,0 +1,60 @@
+name: Arch package smoke
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  package:
+    name: Build and inspect chiri-bin
+    runs-on: ubuntu-24.04
+    container: archlinux:base-devel
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Prepare Arch container
+        run: |
+          pacman -Sy --noconfirm archlinux-keyring
+          pacman -Syu --noconfirm --needed git sudo namcap desktop-file-utils binutils
+
+          useradd -m builder
+          echo 'builder ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/builder
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check .SRCINFO is current
+        run: |
+          sudo chown -R builder:builder "$GITHUB_WORKSPACE"
+          sudo -u builder makepkg --printsrcinfo > .SRCINFO.generated
+          diff -u .SRCINFO .SRCINFO.generated
+
+      - name: Build package
+        run: |
+          sudo -u builder makepkg --syncdeps --noconfirm --noprogressbar --cleanbuild
+
+      - name: Run namcap
+        run: |
+          namcap PKGBUILD || true
+          namcap ./*.pkg.tar.zst || true
+
+      - name: Install package
+        run: |
+          pacman -U --noconfirm ./*.pkg.tar.zst
+
+      - name: Inspect installed files
+        run: |
+          pacman -Qql chiri-bin
+
+          test -x /usr/bin/Chiri
+
+          desktop_file="$(pacman -Qql chiri-bin | grep '/usr/share/applications/.*\.desktop$' | head -n1)"
+          test -n "$desktop_file"
+          desktop-file-validate "$desktop_file"
+
+          ldd /usr/bin/Chiri | tee /tmp/chiri-ldd.txt
+          ! grep -q "not found" /tmp/chiri-ldd.txt
