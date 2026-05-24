@@ -5,7 +5,7 @@ pkgver=0.8.1
 pkgrel=2
 pkgdesc="A cross-platform CalDAV task management app. Currently in very early alpha! (binary release)"
 arch=('x86_64' 'aarch64')
-url="https://github.com/SapphoSys/chiri"
+url="https://github.com/chiriapp/chiri"
 license=('Zlib')
 replaces=('caldav-tasks-bin' 'caldav-tasks')
 conflicts=('caldav-tasks-bin' 'caldav-tasks')
@@ -25,11 +25,11 @@ install=${pkgname}.install
 provides=('chiri')
 
 source_x86_64=(
-  "https://github.com/SapphoSys/chiri/releases/download/app-v${pkgver}/Chiri_${pkgver}_amd64.deb"
+  "https://github.com/chiriapp/chiri/releases/download/app-v${pkgver}/Chiri_${pkgver}_amd64.deb"
   "chiri.desktop"
 )
 source_aarch64=(
-  "https://github.com/SapphoSys/chiri/releases/download/app-v${pkgver}/Chiri_${pkgver}_arm64.deb"
+  "https://github.com/chiriapp/chiri/releases/download/app-v${pkgver}/Chiri_${pkgver}_arm64.deb"
   "chiri.desktop"
 )
 
