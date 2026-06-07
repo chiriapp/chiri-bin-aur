@@ -1,4 +1,4 @@
-name: Push to AUR
+name: Publish
 
 on:
   push:

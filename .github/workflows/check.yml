@@ -1,4 +1,4 @@
-name: Arch binary package smoke test
+name: Check
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: arch-binary-package-smoke-${{ github.ref }}
+  group: check-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

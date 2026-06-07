@@ -1,4 +1,4 @@
-name: Auto Update AUR
+name: Update
 
 on:
   schedule:
