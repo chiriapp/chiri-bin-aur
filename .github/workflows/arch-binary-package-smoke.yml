@@ -71,7 +71,6 @@ jobs:
 
       - name: Check dependencies
         run: |
-          pacman -S --noconfirm ldd
           ldd deb-extract/usr/bin/Chiri | tee /tmp/chiri-ldd.txt
           # Skip "not found" check on aarch64 in x86_64 container
           if [ "${{ matrix.arch }}" = "x86_64" ]; then
