@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -25,31 +25,41 @@ jobs:
       - name: Get latest release version
         id: latest_release
         run: |
+          set -euo pipefail
           LATEST_TAG=$(curl -sL https://api.github.com/repos/chiriapp/chiri/releases/latest | jq -r ".tag_name")
           VERSION=${LATEST_TAG#app-v}
           VERSION=${VERSION#v}
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Get current version
         id: current_version
         run: |
+          set -euo pipefail
           CURRENT=$(grep -E "^pkgver=" PKGBUILD | cut -d= -f2 | tr -d '"')
-          echo "version=${CURRENT}" >> $GITHUB_OUTPUT
+          echo "version=${CURRENT}" >> "$GITHUB_OUTPUT"
 
       - name: Run update script
         if: steps.latest_release.outputs.version != steps.current_version.outputs.version
+        env:
+          VERSION: ${{ steps.latest_release.outputs.version }}
         run: |
-          python3 update.py ${{ steps.latest_release.outputs.version }}
+          set -euo pipefail
+          python3 update.py "$VERSION"
 
       - name: Commit and push to GitHub repository
         if: steps.latest_release.outputs.version != steps.current_version.outputs.version
         env:
           VERSION: ${{ steps.latest_release.outputs.version }}
         run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add PKGBUILD .SRCINFO
-          git commit -m "chore: update to v${VERSION}" || exit 0
+          if git diff --staged --quiet; then
+            echo "Nothing to commit."
+            exit 0
+          fi
+          git commit -m "chore: update to v${VERSION}"
           git push
 
       - name: Push to AUR

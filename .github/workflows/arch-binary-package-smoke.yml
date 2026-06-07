@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
+      fail-fast: false
       matrix:
         arch: [x86_64, aarch64]
     container:
@@ -30,31 +31,37 @@ jobs:
     steps:
       - name: Prepare Arch container
         run: |
+          set -euo pipefail
           pacman -Sy --noconfirm archlinux-keyring
           pacman -Syu --noconfirm --needed git sudo namcap desktop-file-utils binutils tar
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Get package version
         id: pkgver
         run: |
+          set -euo pipefail
           PKGVER=$(grep -E "^pkgver=" PKGBUILD | cut -d= -f2 | tr -d '"')
-          echo "version=${PKGVER}" >> $GITHUB_OUTPUT
+          echo "version=${PKGVER}" >> "$GITHUB_OUTPUT"
 
       - name: Download binary package
+        env:
+          ARCH: ${{ matrix.arch }}
+          VERSION: ${{ steps.pkgver.outputs.version }}
         run: |
-          if [ "${{ matrix.arch }}" = "x86_64" ]; then
-            URL="https://github.com/chiriapp/chiri/releases/download/app-v${{ steps.pkgver.outputs.version }}/Chiri_${{ steps.pkgver.outputs.version }}_amd64.deb"
+          set -euo pipefail
+          if [ "$ARCH" = "x86_64" ]; then
+            URL="https://github.com/chiriapp/chiri/releases/download/app-v${VERSION}/Chiri_${VERSION}_amd64.deb"
           else
-            URL="https://github.com/chiriapp/chiri/releases/download/app-v${{ steps.pkgver.outputs.version }}/Chiri_${{ steps.pkgver.outputs.version }}_arm64.deb"
+            URL="https://github.com/chiriapp/chiri/releases/download/app-v${VERSION}/Chiri_${VERSION}_arm64.deb"
           fi
-
           curl -L -o chiri.deb "$URL"
           test -f chiri.deb
 
       - name: Extract and verify deb
         run: |
+          set -euo pipefail
           mkdir -p deb-extract
           cd deb-extract
           bsdtar -xf ../chiri.deb data.tar.gz
@@ -66,12 +73,14 @@ jobs:
 
       - name: Verify desktop file
         run: |
+          set -euo pipefail
           pacman -S --noconfirm desktop-file-utils
           desktop-file-validate deb-extract/usr/share/applications/Chiri.desktop
 
       - name: Check dependencies
         if: matrix.arch == 'x86_64'
         run: |
+          set -euo pipefail
           # Install runtime deps so ldd can resolve all shared libraries
           pacman -S --noconfirm --needed \
             cairo gdk-pixbuf2 glib2 gtk3 libsoup3 pango webkit2gtk-4.1
