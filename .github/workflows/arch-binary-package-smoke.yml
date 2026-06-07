@@ -71,6 +71,9 @@ jobs:
 
       - name: Check dependencies
         run: |
+          # Install runtime deps so ldd can resolve them
+          pacman -S --noconfirm --needed \
+            cairo gdk-pixbuf2 glib2 gtk3 libsoup3 pango webkit2gtk-4.1
           ldd deb-extract/usr/bin/Chiri | tee /tmp/chiri-ldd.txt
           # Skip "not found" check on aarch64 in x86_64 container
           if [ "${{ matrix.arch }}" = "x86_64" ]; then
