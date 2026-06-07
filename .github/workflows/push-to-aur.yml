@@ -1,0 +1,29 @@
+name: Push to AUR
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - PKGBUILD
+      - .SRCINFO
+      - chiri.desktop
+      - chiri-bin.install
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  push-to-aur:
+    name: Push package files to AUR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Push to AUR
+        uses: ./.github/actions/push-aur
+        with:
+          aur_repo: ssh://aur@aur.archlinux.org/chiri-bin.git
+          files: PKGBUILD .SRCINFO chiri.desktop chiri-bin.install
+          commit_message: ${{ github.event.head_commit.message || 'chore: sync package files' }}
+          aur_ssh_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}

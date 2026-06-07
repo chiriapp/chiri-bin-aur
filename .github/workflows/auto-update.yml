@@ -54,27 +54,9 @@ jobs:
 
       - name: Push to AUR
         if: steps.latest_release.outputs.version != steps.current_version.outputs.version
-        env:
-          AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          VERSION: ${{ steps.latest_release.outputs.version }}
-        run: |
-          if [ -z "$AUR_SSH_PRIVATE_KEY" ]; then
-            echo "Skipping AUR push: AUR_SSH_PRIVATE_KEY secret is not set."
-            exit 0
-          fi
-          mkdir -p ~/.ssh
-          ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts
-          echo "$AUR_SSH_PRIVATE_KEY" > ~/.ssh/aur
-          chmod 600 ~/.ssh/aur
-          export GIT_SSH_COMMAND="ssh -i ~/.ssh/aur"
-          
-          git clone ssh://aur@aur.archlinux.org/chiri-bin.git aur-repo
-          cd aur-repo
-          cp ../PKGBUILD ../.SRCINFO ../chiri.desktop ../chiri-bin.install .
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add PKGBUILD .SRCINFO chiri.desktop chiri-bin.install
-          if ! git diff --quiet || ! git diff --staged --quiet; then
-            git commit -m "chore: update to v$VERSION"
-            git push
-          fi
+        uses: ./.github/actions/push-aur
+        with:
+          aur_repo: ssh://aur@aur.archlinux.org/chiri-bin.git
+          files: PKGBUILD .SRCINFO chiri.desktop chiri-bin.install
+          commit_message: chore(aur)${{ format(': update to v{0}', steps.latest_release.outputs.version) }}
+          aur_ssh_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}

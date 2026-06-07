@@ -1,0 +1,52 @@
+name: Push to AUR
+description: Copies current package files to AUR and pushes
+
+inputs:
+  aur_repo:
+    description: AUR SSH git URL
+    required: true
+  files:
+    description: Space-separated list of files (relative to repo root) to copy into AUR
+    required: true
+  commit_message:
+    description: Commit message to use on AUR
+    required: true
+  aur_ssh_key:
+    description: AUR SSH private key
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Push to AUR
+      shell: bash
+      env:
+        AUR_SSH_KEY: ${{ inputs.aur_ssh_key }}
+        AUR_REPO: ${{ inputs.aur_repo }}
+        FILES: ${{ inputs.files }}
+        COMMIT_MSG: ${{ inputs.commit_message }}
+      run: |
+        if [ -z "$AUR_SSH_KEY" ]; then
+          echo "Skipping AUR push: AUR_SSH_PRIVATE_KEY secret is not set."
+          exit 0
+        fi
+        mkdir -p ~/.ssh
+        ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts
+        echo "$AUR_SSH_KEY" > ~/.ssh/aur
+        chmod 600 ~/.ssh/aur
+        export GIT_SSH_COMMAND="ssh -i ~/.ssh/aur"
+
+        git clone "$AUR_REPO" aur-push-tmp
+        for f in $FILES; do
+          cp "$GITHUB_WORKSPACE/$f" aur-push-tmp/
+        done
+        cd aur-push-tmp
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add -A
+        if git diff --staged --quiet; then
+          echo "AUR is already up to date."
+          exit 0
+        fi
+        git commit -m "$COMMIT_MSG"
+        git push
