@@ -2,7 +2,7 @@ name: Auto Update AUR
 
 on:
   schedule:
-    - cron: '30 4 * * *'
+    - cron: "30 4 * * *"
   workflow_dispatch:
 
 permissions:
@@ -20,7 +20,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Get latest release version
         id: latest_release
@@ -58,5 +58,5 @@ jobs:
         with:
           aur_repo: ssh://aur@aur.archlinux.org/chiri-bin.git
           files: PKGBUILD .SRCINFO chiri.desktop chiri-bin.install
-          commit_message: chore(aur)${{ format(': update to v{0}', steps.latest_release.outputs.version) }}
+          commit_message: "chore: update to v${{ steps.latest_release.outputs.version }}"
           aur_ssh_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}

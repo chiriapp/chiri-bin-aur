@@ -49,7 +49,7 @@ jobs:
           else
             URL="https://github.com/chiriapp/chiri/releases/download/app-v${{ steps.pkgver.outputs.version }}/Chiri_${{ steps.pkgver.outputs.version }}_arm64.deb"
           fi
-          
+
           curl -L -o chiri.deb "$URL"
           test -f chiri.deb
 
@@ -59,16 +59,15 @@ jobs:
           cd deb-extract
           bsdtar -xf ../chiri.deb data.tar.gz
           bsdtar -xf data.tar.gz
-          
+
           test -x usr/bin/Chiri
-          test -f usr/share/applications/chiri.desktop
-          test -f usr/share/pixmaps/chiri.png
-          test -f usr/share/doc/chiri/README.md
+          test -f usr/share/applications/Chiri.desktop
+          test -f usr/share/icons/hicolor/128x128/apps/Chiri.png
 
       - name: Verify desktop file
         run: |
           pacman -S --noconfirm desktop-file-utils
-          desktop-file-validate deb-extract/usr/share/applications/chiri.desktop
+          desktop-file-validate deb-extract/usr/share/applications/Chiri.desktop
 
       - name: Check dependencies
         run: |

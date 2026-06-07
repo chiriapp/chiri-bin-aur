@@ -25,5 +25,5 @@ jobs:
         with:
           aur_repo: ssh://aur@aur.archlinux.org/chiri-bin.git
           files: PKGBUILD .SRCINFO chiri.desktop chiri-bin.install
-          commit_message: ${{ github.event.head_commit.message || 'chore: sync package files' }}
+          commit_message: "${{ github.event.head_commit.message || 'chore: sync package files' }}"
           aur_ssh_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
