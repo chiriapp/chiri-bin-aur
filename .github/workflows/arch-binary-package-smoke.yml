@@ -70,12 +70,10 @@ jobs:
           desktop-file-validate deb-extract/usr/share/applications/Chiri.desktop
 
       - name: Check dependencies
+        if: matrix.arch == 'x86_64'
         run: |
-          # Install runtime deps so ldd can resolve them
+          # Install runtime deps so ldd can resolve all shared libraries
           pacman -S --noconfirm --needed \
             cairo gdk-pixbuf2 glib2 gtk3 libsoup3 pango webkit2gtk-4.1
           ldd deb-extract/usr/bin/Chiri | tee /tmp/chiri-ldd.txt
-          # Skip "not found" check on aarch64 in x86_64 container
-          if [ "${{ matrix.arch }}" = "x86_64" ]; then
-            ! grep -q "not found" /tmp/chiri-ldd.txt
-          fi
+          ! grep -q "not found" /tmp/chiri-ldd.txt
